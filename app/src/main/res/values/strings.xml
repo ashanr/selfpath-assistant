@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Liberty Assistant Hub</string>
+    <string name="mode_philosophical">Philosophical</string>
+    <string name="mode_poetic">Poetic</string>
+    <string name="mode_grammar_check">Grammar Check</string>
+    <string name="mode_freedom_path">Freedom Path</string>
+    <string name="generate_button">Generate</string>
+    <string name="generating_button">Generating…</string>
+    <string name="save_to_journal">Save to Journal</string>
+    <string name="copy_response">Copy response</string>
+    <string name="journal_screen_title">Freedom Path Journal</string>
+    <string name="settings_screen_title">Settings</string>
+    <string name="no_model_loaded">No model loaded — place model in assets/models/</string>
+    <string name="model_status">Model Status</string>
+    <string name="supported_models">Supported Models: Gemma-2B, Qwen-0.5B (TFLite)</string>
+</resources>
