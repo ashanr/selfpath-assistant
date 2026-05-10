@@ -18,6 +18,10 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     buildTypes {
@@ -53,9 +57,8 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/DEPENDENCIES"
         }
-        // Prevent compression of model files for faster asset loading
         jniLibs {
-            useLegacyPackaging = false
+            useLegacyPackaging = true
         }
     }
 
@@ -97,9 +100,6 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
-
-    // MediaPipe LLM Inference (on-device AI)
-    implementation(libs.mediapipe.tasks.genai)
 
     // DataStore Preferences
     implementation(libs.datastore.preferences)

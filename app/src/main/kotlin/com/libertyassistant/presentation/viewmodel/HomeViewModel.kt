@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.libertyassistant.ai.AssistantMode
 import com.libertyassistant.ai.InferenceEngine
+import com.libertyassistant.data.preferences.UserPreferencesRepository
 import com.libertyassistant.domain.model.AIResponse
 import com.libertyassistant.domain.model.JournalEntry
 import com.libertyassistant.domain.usecase.GenerateAIResponseUseCase
@@ -12,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,7 +32,8 @@ data class HomeUiState(
 class HomeViewModel @Inject constructor(
     private val generateAIResponseUseCase: GenerateAIResponseUseCase,
     private val saveJournalEntryUseCase: SaveJournalEntryUseCase,
-    private val inferenceEngine: InferenceEngine
+    private val inferenceEngine: InferenceEngine,
+    private val prefsRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -42,6 +45,14 @@ class HomeViewModel @Inject constructor(
 
     private fun initializeEngine() {
         viewModelScope.launch {
+            val prefs = prefsRepository.userPreferences.first()
+            if (prefs.useApi && prefs.apiKey.isNotBlank()) {
+                _uiState.value = _uiState.value.copy(
+                    isInitializing = false,
+                    isModelReady = true
+                )
+                return@launch
+            }
             _uiState.value = _uiState.value.copy(isInitializing = true)
             val ready = inferenceEngine.initialize()
             _uiState.value = _uiState.value.copy(
