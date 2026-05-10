@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -73,6 +75,9 @@ fun HomeScreen(
                     )
                 },
                 actions = {
+                    IconButton(onClick = { navController.navigate(Screen.History.route) }) {
+                        Icon(Icons.Default.History, contentDescription = "Chat History")
+                    }
                     IconButton(onClick = { navController.navigate(Screen.Journal.route) }) {
                         Icon(Icons.Default.BookmarkBorder, contentDescription = "Journal")
                     }
@@ -145,6 +150,24 @@ fun HomeScreen(
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 Text(text = if (uiState.isLoading) "Generating…" else "Generate")
+            }
+
+            OutlinedButton(
+                onClick = viewModel::startNewChat,
+                enabled = !uiState.isLoading,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.History,
+                    contentDescription = null,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                val label = if (uiState.sessionMessageCount > 0)
+                    "New Chat  (${uiState.sessionMessageCount / 2} exchanges saved)"
+                else "New Chat"
+                Text(text = label)
             }
 
             PromptCard(

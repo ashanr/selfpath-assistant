@@ -32,4 +32,9 @@ object DatabaseModule {
     @Singleton
     fun provideJournalRepository(dao: JournalDao): IJournalRepository =
         JournalRepositoryImpl(dao)
+
+    @Provides
+    @Singleton
+    fun provideChatDao(database: AppDatabase): com.libertyassistant.data.local.database.ChatDao =
+        database.chatDao()
 }

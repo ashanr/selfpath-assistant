@@ -1,9 +1,17 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+}
+
+// Read local.properties safely
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) load(f.inputStream())
 }
 
 android {
@@ -22,6 +30,14 @@ android {
         ndk {
             abiFilters += listOf("arm64-v8a")
         }
+
+        // MongoDB config — baked in at compile time from local.properties
+        buildConfigField("String", "MONGO_URI",
+            "\"${localProps.getProperty("MONGO_URI", "")}\"")
+        buildConfigField("String", "MONGO_DATABASE",
+            "\"${localProps.getProperty("MONGO_DATABASE", "selfpath")}\"")
+        buildConfigField("String", "MONGO_COLLECTION",
+            "\"${localProps.getProperty("MONGO_COLLECTION", "chat_sessions")}\"")
     }
 
     buildTypes {
@@ -50,12 +66,14 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
             excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/native-image/**"
         }
         jniLibs {
             useLegacyPackaging = true
@@ -103,6 +121,9 @@ dependencies {
 
     // DataStore Preferences
     implementation(libs.datastore.preferences)
+
+    // MongoDB Kotlin Coroutine Driver (direct cluster connection, no App Services needed)
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:5.2.0")
 
     // Testing
     testImplementation(libs.junit)

@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.libertyassistant.presentation.ui.screen.HomeScreen
+import com.libertyassistant.presentation.ui.screen.HistoryScreen
 import com.libertyassistant.presentation.ui.screen.JournalScreen
 import com.libertyassistant.presentation.ui.screen.SettingsScreen
 
@@ -12,6 +13,7 @@ sealed class Screen(val route: String) {
     data object Home : Screen("home")
     data object Journal : Screen("journal")
     data object Settings : Screen("settings")
+    data object History : Screen("history")
 }
 
 @Composable
@@ -28,6 +30,9 @@ fun AppNavigation(navController: NavHostController) {
         }
         composable(Screen.Settings.route) {
             SettingsScreen(navController = navController)
+        }
+        composable(Screen.History.route) {
+            HistoryScreen(navController = navController)
         }
     }
 }

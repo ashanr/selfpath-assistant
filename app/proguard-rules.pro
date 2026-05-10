@@ -26,3 +26,10 @@
 # Kotlin serialization
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.AnnotationsKt
+
+# MongoDB Kotlin driver
+-keep class com.mongodb.** { *; }
+-keep class org.bson.** { *; }
+-dontwarn com.mongodb.**
+-dontwarn org.bson.**
+-keepattributes Signature

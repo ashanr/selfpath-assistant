@@ -43,6 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -76,9 +77,17 @@ fun SettingsScreen(
     var apiKeyInput by rememberSaveable { mutableStateOf("") }
     var apiModelInput by rememberSaveable { mutableStateOf("") }
 
-    // Sync local text fields once prefs load
+    // One-time sync from DataStore on first composition
     LaunchedEffect(prefs.apiKey) { if (apiKeyInput != prefs.apiKey) apiKeyInput = prefs.apiKey }
     LaunchedEffect(prefs.apiModel) { if (apiModelInput != prefs.apiModel) apiModelInput = prefs.apiModel }
+
+    // Save when screen is popped (back navigation doesn't trigger onFocusChanged)
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.setApiKey(apiKeyInput)
+            viewModel.setApiModel(apiModelInput)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -197,12 +206,8 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             OutlinedTextField(
                                 value = apiKeyInput,
-                                onValueChange = { apiKeyInput = it },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .onFocusChanged { focus ->
-                                        if (!focus.isFocused) viewModel.setApiKey(apiKeyInput)
-                                    },
+                                onValueChange = { apiKeyInput = it; viewModel.setApiKey(it) },
+                                modifier = Modifier.fillMaxWidth(),
                                 placeholder = { Text("sk-…") },
                                 leadingIcon = { Icon(Icons.Default.Key, contentDescription = null) },
                                 trailingIcon = {
@@ -242,12 +247,8 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             OutlinedTextField(
                                 value = apiModelInput,
-                                onValueChange = { apiModelInput = it },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .onFocusChanged { focus ->
-                                        if (!focus.isFocused) viewModel.setApiModel(apiModelInput)
-                                    },
+                                onValueChange = { apiModelInput = it; viewModel.setApiModel(it) },
+                                modifier = Modifier.fillMaxWidth(),
                                 placeholder = { Text(prefs.apiProvider.defaultModel) },
                                 supportingText = {
                                     Text("Leave blank to use default: ${prefs.apiProvider.defaultModel}")
